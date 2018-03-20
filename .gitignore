@@ -2,3 +2,5 @@
 lib/
 node_modules/
 *.egg-info/
+*checkpoint*
+.DS_Store
