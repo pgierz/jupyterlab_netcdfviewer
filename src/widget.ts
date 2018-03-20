@@ -1,7 +1,7 @@
 // Dr. Paul Gierz
 
 // Import the netcdfjs library:
-import * as NetCDF from 'netcdfjs'
+//import * as NetCDF from 'netcdfjs'
 
 // PG: What does these do?
 import {
@@ -17,7 +17,7 @@ import {
 } from '@phosphor/coreutils';
 
 import {
-  DataGrid, JSONModel
+  DataGrid//, JSONModel
 } from '@phosphor/datagrid';
 
 import {
@@ -25,7 +25,8 @@ import {
 } from '@phosphor/messaging';
 
 import {
-  PanelLayout, Widget
+  Widget
+  //PanelLayout, Widget
 } from '@phosphor/widgets';
 // PG: End...find out what these packages are for!
 
@@ -44,7 +45,7 @@ import {
 const NetCDF_CLASS = 'jp-NetCDFViewer';
 
 // Class name added for the NetCDF viewer toolbar
-const NetCDF_VIEWER_CLASS = 'jp-NetCDFViewer-toolbar';
+//const NetCDF_VIEWER_CLASS = 'jp-NetCDFViewer-toolbar';
 
 // Class name for NetCDF viewer DataGrid
 const NetCDF_GRID_CLASS = 'jp-NetCDF-grid';
@@ -70,7 +71,7 @@ class NetCDFViewer extends Widget implements DocumentRegistry.IReadyWidget {
       super();
 
       let context = this._context = options.context;
-      let layout = this.layout = new PanelLayout();
+      //let layout = this.layout = new PanelLayout();
 
       this.addClass(NetCDF_CLASS);
 
@@ -175,8 +176,9 @@ class NetCDFViewerFactory extends ABCWidgetFactory<NetCDFViewer, DocumentRegistr
   }
 }
 
-namespace Private {
-  /**
-  * This namespace will have some netcdf stuff in it later
-  */
-}
+
+// namespace Private {
+//   /**
+//   * This namespace will have some netcdf stuff in it later
+//   */
+// }

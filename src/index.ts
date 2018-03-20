@@ -58,18 +58,19 @@ const rendererFactory: IRenderMime.IRendererFactory = {
 };
 
 
-const extension: IRenderMime.IExtension = {
-  id: 'jupyterlab_test:plugin',
-  rendererFactory,
-  rank: 0,
-  dataType: 'string'
-  fileTypes: [{
-    name: 'NetCDF',
-    displayName: 'NetCDF',
-    fileFormat: 'base64',
-    mimeTypes: [MIME_TYPE],
-    extensions: ['.nc', '.netcdf'] // PG: here, we may need to add more, depending on what sort of netcdf files people have.
-  }],
+const extension: IRenderMime.IExtension | IRenderMime.IExtension[] = [
+  {
+    id: 'jupyterlab_test:plugin',
+    rendererFactory,
+    //rank: 0,
+    dataType: 'string',
+    fileTypes: [{
+      name: 'NetCDF',
+      displayName: 'NetCDF',
+      fileFormat: 'base64',
+      mimeTypes: [MIME_TYPE],
+      extensions: ['.nc', '.netcdf'] // PG: here, we may need to add more, depending on what sort of netcdf files people have.
+    }],
   documentWidgetFactoryOptions: {
     name: 'NetCDF',
     modelName: 'base64',
@@ -78,6 +79,6 @@ const extension: IRenderMime.IExtension = {
     defaultFor: ['NetCDF']
     }
   }
-};
+];
 
 export default extension;
