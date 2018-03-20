@@ -18,6 +18,7 @@ const MIME_TYPE = 'application/netcdf';
  */
 const CLASS_NAME = 'jp-OutputWidgetnetcdf';
 
+export * from './widget'
 
 /**
  * A widget for rendering netcdf.
@@ -37,6 +38,7 @@ class OutputWidget extends Widget implements IRenderMime.IRenderer {
    * Render netcdf into this widget's node.
    */
   renderModel(model: IRenderMime.IMimeModel): Promise<void> {
+    // The next line is what I need to change, somehow...
     this.node.textContent = JSON.stringify(model.data[this._mimeType]);
     return Promise.resolve(void 0);
   }
@@ -61,6 +63,21 @@ const extension: IRenderMime.IExtension = {
   rendererFactory,
   rank: 0,
   dataType: 'string'
+  fileTypes: [{
+    name: 'NetCDF',
+    displayName: 'NetCDF',
+    fileFormat: 'base64',
+    mimeTypes: [MIME_TYPE],
+    extensions: ['.nc', '.netcdf'] // PG: here, we may need to add more, depending on what sort of netcdf files people have.
+  }],
+  documentWidgetFactoryOptions: {
+    name: 'NetCDF',
+    modelName: 'base64',
+    primaryFileType: 'NetCDF',
+    fileTypes: ['NetCDF'],
+    defaultFor: ['NetCDF']
+    }
+  }
 };
 
 export default extension;

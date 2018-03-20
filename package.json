@@ -26,7 +26,9 @@
     "extension:disable": "jupyter labextension disable jupyterlab_netcdfviewer"
   },
   "dependencies": {
+    "@jupyterlab/docregistry": "^0.15.5",
     "@jupyterlab/rendermime-interfaces": "^1.0.0",
+    "@phosphor/datagrid": "^0.1.5",
     "@phosphor/widgets": "^1.5.0",
     "netcdfjs": "^0.3.1"
   },
