@@ -10,17 +10,17 @@ import {
 /**
  * The default mime type for the extension.
  */
-const MIME_TYPE = 'application/json';
+const MIME_TYPE = 'application/netcdf';
 
 
 /**
  * The class name added to the extension.
  */
-const CLASS_NAME = 'jp-OutputWidgetJSON';
+const CLASS_NAME = 'jp-OutputWidgetnetcdf';
 
 
 /**
- * A widget for rendering JSON.
+ * A widget for rendering netcdf.
  */
 export
 class OutputWidget extends Widget implements IRenderMime.IRenderer {
@@ -34,7 +34,7 @@ class OutputWidget extends Widget implements IRenderMime.IRenderer {
   }
 
   /**
-   * Render JSON into this widget's node.
+   * Render netcdf into this widget's node.
    */
   renderModel(model: IRenderMime.IMimeModel): Promise<void> {
     this.node.textContent = JSON.stringify(model.data[this._mimeType]);
@@ -46,7 +46,7 @@ class OutputWidget extends Widget implements IRenderMime.IRenderer {
 
 
 /**
- * A mime renderer factory for JSON data.
+ * A mime renderer factory for netcdf data.
  */
 export
 const rendererFactory: IRenderMime.IRendererFactory = {
@@ -57,11 +57,10 @@ const rendererFactory: IRenderMime.IRendererFactory = {
 
 
 const extension: IRenderMime.IExtension = {
-  id: 'jupyterlab_netcdfviewer:plugin',
+  id: 'jupyterlab_test:plugin',
   rendererFactory,
   rank: 0,
   dataType: 'string'
 };
 
 export default extension;
-
