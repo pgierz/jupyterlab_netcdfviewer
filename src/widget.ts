@@ -1,7 +1,7 @@
 // Dr. Paul Gierz
 
 // Import the netcdfjs library:
-//import * as NetCDF from 'netcdfjs'
+import * as NetCDF from 'netcdfjs'
 
 // PG: What does these do?
 import {
@@ -62,9 +62,9 @@ const RENDER_TIMEOUT = 1000;
 // from Widget. I don't yet know what the implements does...
 
 // Methods I still need to define:
-// [ ] _onPathChanged
+// [x] _onPathChanged
 // [ ] _updateGrid
-// [ ] _ready
+// [x] _ready
 export
 class NetCDFViewer extends Widget implements DocumentRegistry.IReadyWidget {
     constructor(options: NetCDFViewer.IOptions) {
@@ -142,9 +142,11 @@ class NetCDFViewer extends Widget implements DocumentRegistry.IReadyWidget {
     // In a CSV file, we just have columns and rows. For NetCDF, it's a bit more
     // complicated.
 
-    private _updateGrid(): void{
-      console.log("This does nothing yet...");
-      console.log("Here, you will need to use the Private namespace defined below")
+    private _updateGrid(): void {
+      let fname = this._context.model.toString();
+      let [nchead, ncvars] = Private.readNetCDFFile(fname);
+      console.log("The nchead is:", nchead)
+      console.log("The ncvars are:", ncvars)
     }
 
     private _context: DocumentRegistry.Context;
@@ -177,8 +179,21 @@ class NetCDFViewerFactory extends ABCWidgetFactory<NetCDFViewer, DocumentRegistr
 }
 
 
-// namespace Private {
-//   /**
-//   * This namespace will have some netcdf stuff in it later
-//   */
-// }
+namespace Private {
+  /**
+  * Open a netcdf file and give back the header and variables
+  */
+  export
+  function readNetCDFFile(fname: string): [object, object] {
+    var reader = new NetCDF(fname)
+    interface IVariables {
+      varcode: number;
+    }
+    var nchead = reader.header
+    var ncvars: { [id: number]: IVariables; } = {};
+    for (var i = 0; i < reader.variables.length; i++) {
+      ncvars[reader.variables[i].name] = {varcode: i};
+    }
+    return [nchead, ncvars];
+  }
+}
