@@ -17,7 +17,7 @@ import {
 } from '@phosphor/coreutils';
 
 import {
-  DataGrid//, JSONModel
+  DataGrid, JSONModel
 } from '@phosphor/datagrid';
 
 import {
@@ -85,8 +85,9 @@ class NetCDFViewer extends Widget implements DocumentRegistry.IReadyWidget {
 
       context.pathChanged.connect(this._onPathChanged, this);
       this._onPathChanged();
-
+      console.log("PG: Hey!!!")
       this._context.ready.then(() => {
+        console.log("PG: Update grid will be called")
         this._updateGrid();
         this._ready.resolve(undefined);
         this._monitor = new ActivityMonitor({
@@ -143,10 +144,28 @@ class NetCDFViewer extends Widget implements DocumentRegistry.IReadyWidget {
     // complicated.
 
     private _updateGrid(): void {
+      // For reasons I don't entirely understand, my logs aren't showing up
+      // anywhere
       let fname = this._context.model.toString();
-      let [nchead, ncvars] = Private.readNetCDFFile(fname);
-      console.log("The nchead is:", nchead)
-      console.log("The ncvars are:", ncvars)
+      let [nchead, ncvars, ncvarnames] = Private.readNetCDFFile(fname)
+      console.log(nchead, ncvarnames)
+      let variable_schema = {
+        "id": "/SimpleVariable",
+        "type": "object",
+        "properties": {
+          "name": {"type": "string"},
+          "dimensions": {"type": "array",
+                        "items": { "type": "number"}
+                      },
+          "attributes": {"type": "array",
+                         "items": {"type": "object"}},
+          "type": {"type": "string"},
+          "size": {"type": "number"},
+          "offset": {"type": "number"},
+          "record": {"type": "boolean"}
+        }
+      }
+      this._grid.model = new JSONModel({ ncvars, schema: {variable_schema} });
     }
 
     private _context: DocumentRegistry.Context;
@@ -184,16 +203,12 @@ namespace Private {
   * Open a netcdf file and give back the header and variables
   */
   export
-  function readNetCDFFile(fname: string): [object, object] {
+  function readNetCDFFile(fname: string): [object, object, object] {
     var reader = new NetCDF(fname)
-    interface IVariables {
-      varcode: number;
+    var ncvarnames = [];
+    for (var i = 0; i < reader.variables.length; i++ ) {
+      ncvarnames.push(reader.variables[i].name)
     }
-    var nchead = reader.header
-    var ncvars: { [id: number]: IVariables; } = {};
-    for (var i = 0; i < reader.variables.length; i++) {
-      ncvars[reader.variables[i].name] = {varcode: i};
-    }
-    return [nchead, ncvars];
+    return [reader.header, reader.variables, ncvarnames];
   }
 }
