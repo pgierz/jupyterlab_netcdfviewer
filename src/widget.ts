@@ -17,7 +17,7 @@ import {
 } from '@phosphor/coreutils';
 
 import {
-  DataGrid, JSONModel
+  DataGrid//, JSONModel
 } from '@phosphor/datagrid';
 
 import {
@@ -148,24 +148,27 @@ class NetCDFViewer extends Widget implements DocumentRegistry.IReadyWidget {
       // anywhere
       let fname = this._context.model.toString();
       let [nchead, ncvars, ncvarnames] = Private.readNetCDFFile(fname)
-      console.log(nchead, ncvarnames)
-      let variable_schema = {
-        "id": "/SimpleVariable",
-        "type": "object",
-        "properties": {
-          "name": {"type": "string"},
-          "dimensions": {"type": "array",
-                        "items": { "type": "number"}
-                      },
-          "attributes": {"type": "array",
-                         "items": {"type": "object"}},
-          "type": {"type": "string"},
-          "size": {"type": "number"},
-          "offset": {"type": "number"},
-          "record": {"type": "boolean"}
-        }
-      }
-      this._grid.model = new JSONModel({ ncvars, schema: {variable_schema} });
+      console.log(nchead, ncvars)
+      // let variable_schema = {
+      //   "id": "/SimpleVariable",
+      //   "type": "object",
+      //   "properties": {
+      //     "name": {"type": "string"},
+      //     "dimensions": {"type": "array",
+      //                   "items": { "type": "number"}
+      //                 },
+      //     "attributes": {"type": "array",
+      //                    "items": {"type": "object"}},
+      //     "type": {"type": "string"},
+      //     "size": {"type": "number"},
+      //     "offset": {"type": "number"},
+      //     "record": {"type": "boolean"}
+      //   }
+      // }
+      // this._grid.model = new JSONModel({ ncvars, schema: {variable_schema} });
+      let fields = ncvarnames.map(name => ({ name, type: 'string' }));
+      console.log(fields)
+      //this._grid.model = new JSONModel({ ncvarnames, schema: fields})
     }
 
     private _context: DocumentRegistry.Context;
@@ -203,7 +206,7 @@ namespace Private {
   * Open a netcdf file and give back the header and variables
   */
   export
-  function readNetCDFFile(fname: string): [object, object, object] {
+  function readNetCDFFile(fname: string): [object, object, object[]] {
     var reader = new NetCDF(fname)
     var ncvarnames = [];
     for (var i = 0; i < reader.variables.length; i++ ) {
