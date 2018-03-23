@@ -17,7 +17,7 @@ import {
 } from '@phosphor/coreutils';
 
 import {
-  DataGrid//, JSONModel
+  DataGrid, JSONModel
 } from '@phosphor/datagrid';
 
 import {
@@ -168,7 +168,7 @@ class NetCDFViewer extends Widget implements DocumentRegistry.IReadyWidget {
       // this._grid.model = new JSONModel({ ncvars, schema: {variable_schema} });
       let fields = ncvarnames.map(name => ({ name, type: 'string' }));
       console.log(fields)
-      //this._grid.model = new JSONModel({ ncvarnames, schema: fields})
+      this._grid.model = new JSONModel({ ncvarnames, schema: fields})
     }
 
     private _context: DocumentRegistry.Context;
