@@ -1,8 +1,5 @@
 // Dr. Paul Gierz
 
-// Import the netcdfjs library:
-import * as NetCDF from 'netcdfjs'
-
 // PG: What does these do?
 import {
   ActivityMonitor, PathExt
@@ -17,7 +14,7 @@ import {
 } from '@phosphor/coreutils';
 
 import {
-  DataGrid, JSONModel
+  DataGrid
 } from '@phosphor/datagrid';
 
 import {
@@ -25,8 +22,7 @@ import {
 } from '@phosphor/messaging';
 
 import {
-  Widget
-  //PanelLayout, Widget
+  PanelLayout, Widget
 } from '@phosphor/widgets';
 // PG: End...find out what these packages are for!
 
@@ -37,6 +33,10 @@ import {
   CSVToolbar
 } from './toolbar';
 */
+
+import {
+  NetCDFModel
+} from './model';
 
 // PG: The next section seems to name some classes. I'll just replace CSV with
 // NetCDF
@@ -71,23 +71,24 @@ class NetCDFViewer extends Widget implements DocumentRegistry.IReadyWidget {
       super();
 
       let context = this._context = options.context;
-      //let layout = this.layout = new PanelLayout();
+      let layout = this.layout = new PanelLayout();
 
       this.addClass(NetCDF_CLASS);
 
       this._grid = new DataGrid();
       this._grid.addClass(NetCDF_GRID_CLASS);
-      this._grid.headerVisibility = 'column';
+      this._grid.headerVisibility = 'all';
 
+      layout.addWidget(this._grid);
       // The next section in the CSV reader deals with the delimiter. I don't
       // really need this here, since NetCDF doesn't have delimiters in this
       // sense...
 
       context.pathChanged.connect(this._onPathChanged, this);
       this._onPathChanged();
-      console.log("PG: Hey!!!")
+      //console.log("PG: Hey!!!")
       this._context.ready.then(() => {
-        console.log("PG: Update grid will be called")
+        //console.log("PG: Update grid will be called")
         this._updateGrid();
         this._ready.resolve(undefined);
         this._monitor = new ActivityMonitor({
@@ -144,31 +145,12 @@ class NetCDFViewer extends Widget implements DocumentRegistry.IReadyWidget {
     // complicated.
 
     private _updateGrid(): void {
-      // For reasons I don't entirely understand, my logs aren't showing up
-      // anywhere
-      let fname = this._context.model.toString();
-      let [nchead, ncvars, ncvarnames] = Private.readNetCDFFile(fname)
-      console.log(nchead, ncvars)
-      // let variable_schema = {
-      //   "id": "/SimpleVariable",
-      //   "type": "object",
-      //   "properties": {
-      //     "name": {"type": "string"},
-      //     "dimensions": {"type": "array",
-      //                   "items": { "type": "number"}
-      //                 },
-      //     "attributes": {"type": "array",
-      //                    "items": {"type": "object"}},
-      //     "type": {"type": "string"},
-      //     "size": {"type": "number"},
-      //     "offset": {"type": "number"},
-      //     "record": {"type": "boolean"}
-      //   }
-      // }
-      // this._grid.model = new JSONModel({ ncvars, schema: {variable_schema} });
-      let fields = ncvarnames.map(name => ({ name, type: 'string' }));
-      console.log(fields)
-      this._grid.model = new JSONModel({ ncvarnames, schema: fields})
+      let fname: string = this._context.model.toString();
+      let oldModel = this._grid.model as NetCDFModel;
+      this._grid.model = new NetCDFModel({ fname });
+      if (oldModel) {
+        oldModel.dispose();
+      }
     }
 
     private _context: DocumentRegistry.Context;
@@ -197,21 +179,5 @@ class NetCDFViewerFactory extends ABCWidgetFactory<NetCDFViewer, DocumentRegistr
   // Create a new widget given a Context
   protected createNewWidget(context: DocumentRegistry.Context): NetCDFViewer {
     return new NetCDFViewer({ context });
-  }
-}
-
-
-namespace Private {
-  /**
-  * Open a netcdf file and give back the header and variables
-  */
-  export
-  function readNetCDFFile(fname: string): [object, object, object[]] {
-    var reader = new NetCDF(fname)
-    var ncvarnames = [];
-    for (var i = 0; i < reader.variables.length; i++ ) {
-      ncvarnames.push(reader.variables[i].name)
-    }
-    return [reader.header, reader.variables, ncvarnames];
   }
 }

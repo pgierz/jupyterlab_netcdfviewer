@@ -1,0 +1,59 @@
+/*-----------------------------------------------------------------------------
+| Copyright (c) Jupyter Development Team.
+| Distributed under the terms of the Modified BSD License.
+|----------------------------------------------------------------------------*/
+
+
+:root {
+  --jp-private-csvviewer-toolbar-height: 24px;
+}
+
+.jp-NetCDFViewer {
+  display: flex;
+  flex-direction: column;
+  outline: none;
+  /* This is needed so that all font sizing of children done in ems is
+   * relative to this base size */
+  font-size: var(--jp-ui-font-size1);
+}
+
+.jp-CSVToolbar {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: row;
+    border: none;
+    height: var(--jp-private-csvviewer-toolbar-height);
+    background: var(--jp-toolbar-background);
+    z-index: 1;
+}
+
+.jp-CSVToolbar .jp-CSVToolbar-label {
+    color: var(--jp-ui-font-color1);
+    font-size: var(--jp-ui-font-size1);
+    line-height: var(--jp-private-csvviewer-toolbar-height);
+    padding-left: 8px;
+    padding-right: 8px;
+}
+
+
+.jp-CSVToolbar .jp-CSVToolbar-dropdown {
+    flex: 0 0 auto;
+    vertical-align: middle;
+    border: var(--jp-border-width) solid var(--jp-border-color1);
+    border-radius: 0;
+    outline: none;
+    width: 40px;
+    height: 20px;
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+
+
+.jp-CSVToolbar .jp-CSVToolbar-dropdown select.jp-mod-styled {
+  font-size: var(--jp-ui-font-size1);
+}
+
+
+.jp-NetCDFViewer-grid {
+  flex: 1 1 auto;
+}
