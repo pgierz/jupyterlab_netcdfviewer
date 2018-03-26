@@ -6,6 +6,11 @@ import {
   Widget
 } from '@phosphor/widgets';
 
+// import {
+//   JSONObject
+// } from '@phosphor/coreutils'
+
+import '../style/index.css';
 
 /**
  * The default mime type for the extension.
@@ -17,8 +22,13 @@ const MIME_TYPE = 'application/netcdf';
  * The class name added to the extension.
  */
 const CLASS_NAME = 'jp-OutputWidgetnetcdf';
+import * as NetCDF from 'netcdfjs'
+// import {
+//   NetCDFViewer
+// } from './widget'
 
-export * from './widget'
+//export * from './widget'
+//export * from './model'
 
 /**
  * A widget for rendering netcdf.
@@ -39,7 +49,17 @@ class OutputWidget extends Widget implements IRenderMime.IRenderer {
    */
   renderModel(model: IRenderMime.IMimeModel): Promise<void> {
     // The next line is what I need to change, somehow...
-    this.node.textContent = JSON.stringify(model.data[this._mimeType]);
+    // ORIGINAL VERSION:
+    //this.node.textContent = JSON.stringify(model.data[this._mimeType]);
+    let data = model.data[MIME_TYPE] as string;
+    const ArrBuf = Private.b64toArrayBuffer(data);
+    console.log(data);
+    console.log(ArrBuf);
+    //console.error(data)
+    let reader = new NetCDF(ArrBuf);
+    //console.log(str2ab(data));
+    console.log(reader);
+    this.node.textContent = reader.variables //JSON.stringify(model.data[this._mimeType]);
     return Promise.resolve(void 0);
   }
 
@@ -81,4 +101,19 @@ const extension: IRenderMime.IExtension | IRenderMime.IExtension[] = [
   }
 ];
 
+
+
 export default extension;
+
+namespace Private {
+  export
+  function b64toArrayBuffer(b64Data: string): ArrayBuffer {
+    const byteCharacters = atob(b64Data);
+    let len = byteCharacters.length;
+    var array = new Uint8Array(new ArrayBuffer(len));
+    for (var i = 0; i < len; i++) {
+      array[i] = byteCharacters.charCodeAt(i);
+    }
+    return array;
+  }
+}
