@@ -16,10 +16,12 @@ import {
   PromiseDelegate
 } from '@phosphor/coreutils';
 
+//import * as NetCDF from 'netcdfjs'
+
 // The Jupyter guys have their own parser here. I might need to do this too..
 
 export
-class NetCDFModel extends DataModel implements IDisposable {
+class NetCDFModel_varnames extends DataModel implements IDisposable {
   /**
   * Create a data model with static NetCDF data.
   *
@@ -28,9 +30,9 @@ class NetCDFModel extends DataModel implements IDisposable {
   constructor(options: NetCDFModel.IOptions) {
     super();
     let {
-      fname,
+      vars,
     } = options;
-    this._data = fname
+    this._data = vars
   }
 
   // We need something to check if the modle has been disposed (whatever this means)
@@ -59,19 +61,19 @@ class NetCDFModel extends DataModel implements IDisposable {
 
   // Get the row count (it's just the length of ncvarnames for now)
   rowCount(region: DataModel.RowRegion): number {
-    return 1;
-    //return this._data.length
+    //return 1;
+    return this._data.length;
   }
 
   // Implement a data method:
-  data(region: DataModel.CellRegion): string {
+  data(region: DataModel.CellRegion, index: number): string {
     let value: string;
-    value = this._data;
+    value = this._data[index]
     return value;
   }
 
   // data variables:
-  private _data: string;
+  private _data: string[];
 
   // Bookkeeping variables:
   private _isDisposed: boolean = false;
@@ -82,9 +84,7 @@ export
 namespace NetCDFModel {
   export
   interface IOptions {
-    fname: string;
-    //ncvars: object;
-    //ncvarnames: string[];
+    vars: string[];
   }
 }
 
@@ -92,16 +92,7 @@ namespace NetCDFModel {
 //   /**
 //   * Open a netcdf file and give back the header and variables
 //   */
-//   export
-//   function readNetCDFFile(fname: string): [object, object, string[]] {
-//     var reader = new NetCDF(fname)
-//     var ncvarnames = [];
-//     for (var i = 0; i < reader.variables.length; i++ ) {
-//       ncvarnames.push(reader.variables[i].name)
-//     }
-//     return [reader.header, reader.variables, ncvarnames];
-//   }
-// }
+
 // let [nchead, ncvars, ncvarnames] = Private.readNetCDFFile(fname)
 // let variable_schema = {
 //   "id": "/SimpleVariable",

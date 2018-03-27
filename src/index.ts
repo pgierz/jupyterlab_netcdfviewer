@@ -3,7 +3,7 @@ import {
 } from '@jupyterlab/rendermime-interfaces';
 
 import {
-  Widget
+  Widget, StackedPanel, DockPanel
 } from '@phosphor/widgets';
 
 import '../style/index.css';
@@ -12,7 +12,6 @@ import '../style/index.css';
  * The default mime type for the extension.
  */
 const MIME_TYPE = 'application/netcdf';
-
 
 /**
  * The class name added to the extension.
@@ -50,6 +49,16 @@ class OutputWidget extends Widget implements IRenderMime.IRenderer {
     this.node.textContent = "The file has the following variables: "+ncvarnames_str;
     return Promise.resolve(void 0);
   }
+
+  /**
+  * Set up fonts and things for float rendering:
+  */
+  // let fgColorFloatRenderer = new TextRenderer({
+  //   font: 'bold 12px sans-serif',
+  //   textColor: redGreenBlack,
+  //   format: TextRenderer.formatFixed({digits: 2}),
+  //   horizontalAlignment: 'right'
+  // });
 
   private _mimeType: string;
 }
@@ -103,5 +112,24 @@ namespace Private {
       array[i] = byteCharacters.charCodeAt(i);
     }
     return array;
+  }
+
+  export
+  function readNetCDFFile(fname: string): [object, object, string[]] {
+    var reader = new NetCDF(b64toArrayBuffer(fname))
+    var ncvarnames = [];
+    for (var i = 0; i < reader.variables.length; i++ ) {
+      ncvarnames.push(reader.variables[i].name)
+    }
+    return [reader.header, reader.variables, ncvarnames];
+  }
+
+  export
+  function createWrapper(content: Widget, title: string): Widget {
+    let wrapper = new StackedPanel();
+    wrapper.addClass('content-wrapper');
+    wrapper.addWidget(content);
+    wrapper.title.label = title;
+    return wrapper;
   }
 }
