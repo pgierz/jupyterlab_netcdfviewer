@@ -3,12 +3,12 @@ import {
 } from '@jupyterlab/rendermime-interfaces';
 
 import {
-  Widget
+  Widget, StackedPanel, DockPanel
 } from '@phosphor/widgets';
 
-// import {
-//   JSONObject
-// } from '@phosphor/coreutils'
+import {
+  DataGrid
+} from '@phosphor/datagrid';
 
 import '../style/index.css';
 
@@ -17,18 +17,15 @@ import '../style/index.css';
  */
 const MIME_TYPE = 'application/netcdf';
 
-
 /**
  * The class name added to the extension.
  */
 const CLASS_NAME = 'jp-OutputWidgetnetcdf';
 import * as NetCDF from 'netcdfjs'
-// import {
-//   NetCDFViewer
-// } from './widget'
 
-//export * from './widget'
-//export * from './model'
+import {
+  NetCDFModel_varnames
+} from './model'
 
 /**
  * A widget for rendering netcdf.
@@ -48,20 +45,34 @@ class OutputWidget extends Widget implements IRenderMime.IRenderer {
    * Render netcdf into this widget's node.
    */
   renderModel(model: IRenderMime.IMimeModel): Promise<void> {
-    // The next line is what I need to change, somehow...
-    // ORIGINAL VERSION:
-    //this.node.textContent = JSON.stringify(model.data[this._mimeType]);
     let data = model.data[MIME_TYPE] as string;
-    const ArrBuf = Private.b64toArrayBuffer(data);
-    console.log(data);
-    console.log(ArrBuf);
-    //console.error(data)
-    let reader = new NetCDF(ArrBuf);
-    //console.log(str2ab(data));
-    console.log(reader);
-    this.node.textContent = reader.variables //JSON.stringify(model.data[this._mimeType]);
+    let [nchead, ncvars, ncvarnames] = Private.readNetCDFFile(data);
+    console.log(nchead, ncvars)
+    let ncdfModel = new NetCDFModel_varnames({vars: ncvarnames });
+
+    let grid1 = new DataGrid();
+    grid1.model = ncdfModel
+
+    let wrapper1 = Private.createWrapper(grid1, 'Test1')
+
+    let dock = new DockPanel();
+    dock.id = 'dock';
+
+    dock.addWidget(wrapper1);
+    Widget.attach(dock, document.body);
+
     return Promise.resolve(void 0);
   }
+
+  /**
+  * Set up fonts and things for float rendering:
+  */
+  // let fgColorFloatRenderer = new TextRenderer({
+  //   font: 'bold 12px sans-serif',
+  //   textColor: redGreenBlack,
+  //   format: TextRenderer.formatFixed({digits: 2}),
+  //   horizontalAlignment: 'right'
+  // });
 
   private _mimeType: string;
 }
@@ -115,5 +126,24 @@ namespace Private {
       array[i] = byteCharacters.charCodeAt(i);
     }
     return array;
+  }
+
+  export
+  function readNetCDFFile(fname: string): [object, object, string[]] {
+    var reader = new NetCDF(b64toArrayBuffer(fname))
+    var ncvarnames = [];
+    for (var i = 0; i < reader.variables.length; i++ ) {
+      ncvarnames.push(reader.variables[i].name)
+    }
+    return [reader.header, reader.variables, ncvarnames];
+  }
+
+  export
+  function createWrapper(content: Widget, title: string): Widget {
+    let wrapper = new StackedPanel();
+    wrapper.addClass('content-wrapper');
+    wrapper.addWidget(content);
+    wrapper.title.label = title;
+    return wrapper;
   }
 }
