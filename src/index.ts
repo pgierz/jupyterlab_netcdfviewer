@@ -6,6 +6,10 @@ import {
   Widget, PanelLayout
 } from '@phosphor/widgets';
 
+import {
+  DataGrid
+} from '@phosphor/datagrid';
+
 import '../style/index.css';
 
 /**
@@ -19,6 +23,9 @@ const MIME_TYPE = 'application/netcdf';
 const CLASS_NAME = 'jp-OutputWidgetnetcdf';
 import * as NetCDF from 'netcdfjs'
 
+import {
+  NetCDFModel_varnames
+} from './model'
 
 /**
  * A widget for rendering netcdf.
