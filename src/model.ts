@@ -61,7 +61,7 @@ class NetCDFModel_varnames extends DataModel implements IDisposable {
 
   // Get the row count (it's just the length of ncvarnames for now)
   rowCount(region: DataModel.RowRegion): number {
-    //return 1;
+    console.log("rowCount: the length is", this._data.length)
     return this._data.length;
   }
 
@@ -87,27 +87,3 @@ namespace NetCDFModel {
     vars: string[];
   }
 }
-
-// namespace Private {
-//   /**
-//   * Open a netcdf file and give back the header and variables
-//   */
-
-// let [nchead, ncvars, ncvarnames] = Private.readNetCDFFile(fname)
-// let variable_schema = {
-//   "id": "/SimpleVariable",
-//   "type": "object",
-//   "properties": {
-//     "name": {"type": "string"},
-//     "dimensions": {"type": "array",
-//                   "items": { "type": "number"}
-//                 },
-//     "attributes": {"type": "array",
-//                    "items": {"type": "object"}},
-//     "type": {"type": "string"},
-//     "size": {"type": "number"},
-//     "offset": {"type": "number"},
-//     "record": {"type": "boolean"}
-//   }
-// }
-// this._grid.model = new JSONModel({ ncvars, schema: {variable_schema} });

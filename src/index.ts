@@ -3,7 +3,7 @@ import {
 } from '@jupyterlab/rendermime-interfaces';
 
 import {
-  Widget, StackedPanel, DockPanel
+  Widget, PanelLayout
 } from '@phosphor/widgets';
 
 import {
@@ -50,16 +50,11 @@ class OutputWidget extends Widget implements IRenderMime.IRenderer {
     console.log(nchead, ncvars)
     let ncdfModel = new NetCDFModel_varnames({vars: ncvarnames });
 
-    let grid1 = new DataGrid();
-    grid1.model = ncdfModel
+    let ncvarname_grid = new DataGrid();
+    ncvarname_grid.model = ncdfModel
 
-    let wrapper1 = Private.createWrapper(grid1, 'Test1')
-
-    let dock = new DockPanel();
-    dock.id = 'dock';
-
-    dock.addWidget(wrapper1);
-    Widget.attach(dock, document.body);
+    this.layout = new PanelLayout();
+    (this.layout as PanelLayout).addWidget(ncvarname_grid)
 
     return Promise.resolve(void 0);
   }
@@ -138,12 +133,12 @@ namespace Private {
     return [reader.header, reader.variables, ncvarnames];
   }
 
-  export
-  function createWrapper(content: Widget, title: string): Widget {
-    let wrapper = new StackedPanel();
-    wrapper.addClass('content-wrapper');
-    wrapper.addWidget(content);
-    wrapper.title.label = title;
-    return wrapper;
-  }
+  // export
+  // function createWrapper(content: Widget, title: string): Widget {
+  //   let wrapper = new StackedPanel();
+  //   wrapper.addClass('content-wrapper');
+  //   wrapper.addWidget(content);
+  //   wrapper.title.label = title;
+  //   return wrapper;
+  // }
 }
