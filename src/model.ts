@@ -56,19 +56,36 @@ class NetCDFModel_varnames extends DataModel implements IDisposable {
 
   // Implement a columnCount of 1:
   columnCount(region: DataModel.ColumnRegion): number {
-    return 1;
+    if (region === "body") {
+      return 1;
+    } else {
+      return 0;
+    }
   }
 
   // Get the row count (it's just the length of ncvarnames for now)
   rowCount(region: DataModel.RowRegion): number {
-    console.log("rowCount: the length is", this._data.length)
-    return this._data.length;
+    if (region === "body" ) {
+      console.log("rowCount: the length is", this._data.length)
+      return this._data.length;
+    } else {
+      return 1;
+    }
   }
 
   // Implement a data method:
   data(region: DataModel.CellRegion, index: number): string {
     let value: string;
-    value = this._data[index]
+    switch (region) {
+      case 'body':
+        value = this._data[index]
+        break;
+      case 'column-header':
+        value = "Variable Name";
+        break;
+      default:
+        throw "unreachable";
+    }
     return value;
   }
 
