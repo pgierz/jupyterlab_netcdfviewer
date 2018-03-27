@@ -3,7 +3,7 @@ import {
 } from '@jupyterlab/rendermime-interfaces';
 
 import {
-  Widget, StackedPanel, DockPanel
+  Widget, PanelLayout
 } from '@phosphor/widgets';
 
 import '../style/index.css';
@@ -39,14 +39,16 @@ class OutputWidget extends Widget implements IRenderMime.IRenderer {
    */
   renderModel(model: IRenderMime.IMimeModel): Promise<void> {
     let data = model.data[MIME_TYPE] as string;
-    const ArrBuf = Private.b64toArrayBuffer(data);
-    let reader = new NetCDF(ArrBuf);
-    let ncvarnames = [];
-    for (var i = 0; i < reader.variables.length; i++) {
-      ncvarnames.push(reader.variables[i].name);
-    }
-    let ncvarnames_str = ncvarnames.join(" ");
-    this.node.textContent = "The file has the following variables: "+ncvarnames_str;
+    let [nchead, ncvars, ncvarnames] = Private.readNetCDFFile(data);
+    console.log(nchead, ncvars)
+    let ncdfModel = new NetCDFModel_varnames({vars: ncvarnames });
+
+    let ncvarname_grid = new DataGrid();
+    ncvarname_grid.model = ncdfModel
+
+    this.layout = new PanelLayout();
+    (this.layout as PanelLayout).addWidget(ncvarname_grid)
+
     return Promise.resolve(void 0);
   }
 
@@ -124,12 +126,12 @@ namespace Private {
     return [reader.header, reader.variables, ncvarnames];
   }
 
-  export
-  function createWrapper(content: Widget, title: string): Widget {
-    let wrapper = new StackedPanel();
-    wrapper.addClass('content-wrapper');
-    wrapper.addWidget(content);
-    wrapper.title.label = title;
-    return wrapper;
-  }
+  // export
+  // function createWrapper(content: Widget, title: string): Widget {
+  //   let wrapper = new StackedPanel();
+  //   wrapper.addClass('content-wrapper');
+  //   wrapper.addWidget(content);
+  //   wrapper.title.label = title;
+  //   return wrapper;
+  // }
 }
