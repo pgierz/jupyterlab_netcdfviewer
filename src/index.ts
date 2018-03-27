@@ -6,10 +6,6 @@ import {
   Widget
 } from '@phosphor/widgets';
 
-// import {
-//   JSONObject
-// } from '@phosphor/coreutils'
-
 import '../style/index.css';
 
 /**
@@ -23,12 +19,7 @@ const MIME_TYPE = 'application/netcdf';
  */
 const CLASS_NAME = 'jp-OutputWidgetnetcdf';
 import * as NetCDF from 'netcdfjs'
-// import {
-//   NetCDFViewer
-// } from './widget'
 
-//export * from './widget'
-//export * from './model'
 
 /**
  * A widget for rendering netcdf.
@@ -48,18 +39,15 @@ class OutputWidget extends Widget implements IRenderMime.IRenderer {
    * Render netcdf into this widget's node.
    */
   renderModel(model: IRenderMime.IMimeModel): Promise<void> {
-    // The next line is what I need to change, somehow...
-    // ORIGINAL VERSION:
-    //this.node.textContent = JSON.stringify(model.data[this._mimeType]);
     let data = model.data[MIME_TYPE] as string;
     const ArrBuf = Private.b64toArrayBuffer(data);
-    console.log(data);
-    console.log(ArrBuf);
-    //console.error(data)
     let reader = new NetCDF(ArrBuf);
-    //console.log(str2ab(data));
-    console.log(reader);
-    this.node.textContent = reader.variables //JSON.stringify(model.data[this._mimeType]);
+    let ncvarnames = [];
+    for (var i = 0; i < reader.variables.length; i++) {
+      ncvarnames.push(reader.variables[i].name);
+    }
+    let ncvarnames_str = ncvarnames.join(" ");
+    this.node.textContent = "The file has the following variables: "+ncvarnames_str;
     return Promise.resolve(void 0);
   }
 
